@@ -447,9 +447,32 @@ footer p{
 }
 
 
+/* Classes HTML */
+
+.classes-container p{
+    font-size: 1.0rem;
+}
+
+.classes-container{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
 
 
+.box-classes{
+    justify-content: center;
+    border-radius: 2rem;
+    border: rgb(53, 53, 53) .1rem solid;
+    border-color: rgb(163,163,163);
+    background: (250,250,250);
+    margin: 2rem auto;
+    padding: .5rem;
+}
 
+.box-classes h2{
+    text-align: center;
+}
 
 
 

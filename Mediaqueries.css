@@ -38,6 +38,10 @@
     .about-containers{
         margin-top: 0;
     }
+    .classes-container{
+        display: grid;
+        grid-template-columns: repeat(1, 3fr);
+        }
 }
 
 @media screen and (max-width: 600px){
@@ -89,7 +93,13 @@
     .text-container{
         text-align: justify;
     }
-}
+    .classes-container{
+        display: grid;
+        grid-template-columns: repeat(1, 3fr);
+        }
+
+    }
+
 
 
 
