@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Information Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    form {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    textarea {
+      resize: vertical;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px 18px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button[type="submit"] {
+      background-color: #28a745;
+      color: white;
+    }
+    button[type="button"] {
+      background-color: #6c757d;
+      color: white;
+    }
+    .error {
+      color: red;
+      font-size: 13px;
+    }
+    #confirmation {
+      display: none;
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    #confirmation h2 {
+      text-align: center;
+    }
+    #confirmation p {
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>User Information Form</h1>
+  
+  <form id="infoForm">
+    <label for="name">Full Name:</label>
+    <input type="text" id="name" placeholder="First Last" required>
+    <span class="error" id="nameError"></span>
+
+    <label for="address">Address:</label>
+    <input type="text" id="address" placeholder="Street Address" required>
+    <input type="text" id="city" placeholder="City" required>
+    <input type="text" id="state" placeholder="State" required>
+    <input type="text" id="zip" placeholder="Zip Code" required>
+    <span class="error" id="addressError"></span>
+
+    <label for="phone">Phone Number:</label>
+    <input type="tel" id="phone" placeholder="(000)000-0000" required>
+    <span class="error" id="phoneError"></span>
+
+    <label for="email">Email Address:</label>
+    <input type="email" id="email" placeholder="name@example.com" required>
+    <span class="error" id="emailError"></span>
+
+    <label for="birthdate">Birth Date:</label>
+    <input type="date" id="birthdate" required>
+    <span class="error" id="birthError"></span>
+
+    <label for="message">Message:</label>
+    <textarea id="message" rows="5" placeholder="Enter your message..." required></textarea>
+    <span class="error" id="messageError"></span>
+
+    <label for="confirm">What is 2 + 3?</label>
+    <input type="text" id="confirm" placeholder="Enter answer" required>
+    <span class="error" id="confirmError"></span>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <div id="confirmation">
+    <h2>Please Confirm Your Information</h2>
+    <p><strong>Name:</strong> <span id="confName"></span></p>
+    <p><strong>Address:</strong> <span id="confAddress"></span></p>
+    <p><strong>Phone:</strong> <span id="confPhone"></span></p>
+    <p><strong>Email:</strong> <span id="confEmail"></span></p>
+    <p><strong>Birth Date:</strong> <span id="confBirth"></span></p>
+    <p><strong>Message:</strong> <span id="confMessage"></span></p>
+    
+    <button type="button" onclick="editForm()">Edit</button>
+    <button type="button" onclick="finalSubmit()">Confirm & Send</button>
+  </div>
+
+  <script>
+    const form = document.getElementById("infoForm");
+    const confirmation = document.getElementById("confirmation");
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      if (validateForm()) {
+        // Fill confirmation page
+        document.getElementById("confName").textContent = document.getElementById("name").value;
+        document.getElementById("confAddress").textContent = 
+          document.getElementById("address").value + ", " +
+          document.getElementById("city").value + ", " +
+          document.getElementById("state").value + " " +
+          document.getElementById("zip").value;
+        document.getElementById("confPhone").textContent = document.getElementById("phone").value;
+        document.getElementById("confEmail").textContent = document.getElementById("email").value;
+        document.getElementById("confBirth").textContent = document.getElementById("birthdate").value;
+        document.getElementById("confMessage").textContent = document.getElementById("message").value;
+
+        form.style.display = "none";
+        confirmation.style.display = "block";
+      }
+    });
+
+    function validateForm() {
+      let valid = true;
+
+      // Name validation
+      const name = document.getElementById("name").value.trim();
+      if (!name.includes(" ")) {
+        document.getElementById("nameError").textContent = "Enter first and last name.";
+        valid = false;
+      } else {
+        document.getElementById("nameError").textContent = "";
+      }
+
+      // Phone validation
+      const phone = document.getElementById("phone").value.trim();
+      const phonePattern = /^\(\d{3}\)\d{3}-\d{4}$/;
+      if (!phonePattern.test(phone)) {
+        document.getElementById("phoneError").textContent = "Format: (123)456-7890";
+        valid = false;
+      } else {
+        document.getElementById("phoneError").textContent = "";
+      }
+
+      // Birthdate validation
+      const birthdate = new Date(document.getElementById("birthdate").value);
+      const today = new Date();
+      if (birthdate > today || isNaN(birthdate.getTime())) {
+        document.getElementById("birthError").textContent = "Enter a valid past date.";
+        valid = false;
+      } else {
+        document.getElementById("birthError").textContent = "";
+      }
+
+      // Confirmation question
+      const confirmAnswer = document.getElementById("confirm").value.trim();
+      if (confirmAnswer !== "5") {
+        document.getElementById("confirmError").textContent = "Wrong answer.";
+        valid = false;
+      } else {
+        document.getElementById("confirmError").textContent = "";
+      }
+
+      return valid;
+    }
+
+    function editForm() {
+      confirmation.style.display = "none";
+      form.style.display = "block";
+    }
+
+    function finalSubmit() {
+      alert("Form submitted! It would be sent to your email using mailto.");
+      // Example mailto action
+      window.location.href = "mailto:youraddress@example.com?subject=Form Submission&body=" +
+        "Name: " + document.getElementById("name").value + "%0D%0A" +
+        "Address: " + document.getElementById("address").value + ", " +
+        document.getElementById("city").value + ", " +
+        document.getElementById("state").value + " " +
+        document.getElementById("zip").value + "%0D%0A" +
+        "Phone: " + document.getElementById("phone").value + "%0D%0A" +
+        "Email: " + document.getElementById("email").value + "%0D%0A" +
+        "Birthdate: " + document.getElementById("birthdate").value + "%0D%0A" +
+        "Message: " + document.getElementById("message").value;
+    }
+  </script>
+</body>
+</html>
