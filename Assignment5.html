@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Spirograph</title>
+  <link rel="stylesheet" href="Style.css">
+  <style>
+    body {
+      text-align: center;
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+    }
+    canvas {
+      border: 1px solid #333;
+      margin-top: 20px;
+      background: #fff;
+    }
+    .controls {
+      margin-top: 20px;
+    }
+    input {
+      width: 60px;
+      margin: 0 5px;
+    }
+    button {
+      padding: 8px 15px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Spirograph Generator</h1>
+
+  <div class="controls">
+    R: <input type="number" id="R" value="80" min="10" max="200">
+    r: <input type="number" id="r" value="35" min="5" max="100">
+    O: <input type="number" id="O" value="20" min="1" max="100">
+    <button onclick="startDrawing()">Start Spirograph</button>
+  </div>
+
+  <canvas id="spiroCanvas" width="600" height="600"></canvas>
+
+
+
+
+<footer>
+    <nav>
+        <div class="nav-links-container">
+            <ul class="nav-links">
+                <!--
+                <li><a href="#about">About</a></li>
+                -->
+                
+                <li><a href="Index.html">Home</a></li>
+                <li><a href="Projects.html">Assignments</a></li>
+                <li><a href="Classes.html">Classes</a></li>
+            </ul>
+        </div>
+    </nav>
+    <p>Copyright &#169; 2025 Aidyn Carey. All Rights Reserved.</p>
+</footer>
+
+
+
+
+  <script>
+    let canvas = document.getElementById("spiroCanvas");
+    let ctx = canvas.getContext("2d");
+
+    let R, r, O;
+    let t = 0;
+    let drawing = false;
+
+    function getPosition(t) {
+      let x = (R + r) * Math.cos(t) - (r + O) * Math.cos(((R + r) / r) * t);
+      let y = (R + r) * Math.sin(t) - (r + O) * Math.sin(((R + r) / r) * t);
+      return { x: x + canvas.width / 2, y: y + canvas.height / 2 };
+    }
+
+    function newColor() {
+      return '#' + Math.floor(Math.random() * 16777215).toString(16);
+    }
+
+    function drawStep() {
+      if (!drawing) return;
+
+      let pos1 = getPosition(t);
+      t += 0.05;
+      let pos2 = getPosition(t);
+
+      ctx.beginPath();
+      ctx.strokeStyle = newColor();
+      ctx.moveTo(pos1.x, pos1.y);
+      ctx.lineTo(pos2.x, pos2.y);
+      ctx.stroke();
+      ctx.closePath();
+
+      // Continue drawing
+      requestAnimationFrame(drawStep);
+    }
+
+    function startDrawing() {
+      // Get user inputs
+      R = parseFloat(document.getElementById("R").value);
+      r = parseFloat(document.getElementById("r").value);
+      O = parseFloat(document.getElementById("O").value);
+
+      if (isNaN(R) || isNaN(r) || isNaN(O) || r > R) {
+        alert("Please enter valid values (and ensure r ≤ R).");
+        return;
+      }
+
+      // Reset canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      t = 0;
+      drawing = true;
+
+      drawStep();
+    }
+  </script>
+</body>
+</html>
