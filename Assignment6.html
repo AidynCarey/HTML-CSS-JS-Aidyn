@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Basketball Player Stats</title>
+  <link rel="stylesheet" href="Style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    table {
+      width: 60%;
+      margin: 20px auto;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 12px;
+      text-align: center;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>Daytona Falcons Player Stats (2025)</h1>
+  <table id="playerTable">
+    <thead>
+      <tr>
+        <th>Player Name</th>
+        <th>Position</th>
+        <th>Points/Game</th>
+        <th>Assists/Game</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    // Fetch the external JSON file
+    fetch('players.json')
+      .then(response => response.json())
+      .then(data => {
+        const tableBody = document.querySelector('#playerTable tbody');
+        data.players.forEach(player => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${player.playerName}</td>
+            <td>${player.position}</td>
+            <td>${player.pointsPerGame}</td>
+            <td>${player.assistsPerGame}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+      })
+      .catch(error => console.error('Error loading JSON:', error));
+  </script>
+
+
+<footer>
+    <nav>
+        <div class="nav-links-container">
+            <ul class="nav-links">
+                <!--
+                <li><a href="#about">About</a></li>
+                -->
+                
+                <li><a href="Index.html">Home</a></li>
+                <li><a href="Projects.html">Assignments</a></li>
+                <li><a href="Classes.html">Classes</a></li>
+            </ul>
+        </div>
+    </nav>
+    <p>Copyright &#169; 2025 Aidyn Carey. All Rights Reserved.</p>
+</footer>
+</body>
+
+
+
+</html>

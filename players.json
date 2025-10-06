@@ -1,0 +1,24 @@
+{
+  "teamName": "Daytona Falcons",
+  "season": "2025",
+  "players": [
+    {
+      "playerName": "Chris Johnson",
+      "position": "Guard",
+      "pointsPerGame": 24.6,
+      "assistsPerGame": 7.2
+    },
+    {
+      "playerName": "Marcus Lee",
+      "position": "Forward",
+      "pointsPerGame": 19.3,
+      "assistsPerGame": 3.5
+    },
+    {
+      "playerName": "Daniel Perez",
+      "position": "Center",
+      "pointsPerGame": 15.1,
+      "assistsPerGame": 1.9
+    }
+  ]
+}
