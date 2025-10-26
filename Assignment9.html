@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Assignment 9 - Animation</title>
+    <link rel="stylesheet" href="Style.css">
+    <style>
+        canvas {
+            background: #222;
+            display: block;
+            margin: 0 auto;
+            border: 2px solid #fff;
+        }
+    </style>
+</head>
+<body>
+<canvas id="gameCanvas" width="600" height="400"></canvas>
+
+<script>
+// Canvas setup
+var canvas = document.getElementById("gameCanvas");
+var ctx = canvas.getContext("2d");
+
+// Ball variables
+var x = canvas.width / 2;
+var y = canvas.height / 2;
+var radius = 20;
+var dx = 3;
+var dy = 3;
+var color = "cyan";
+
+// Animation loop
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw ball
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.closePath();
+
+    // Bounce logic
+    if (x + dx > canvas.width - radius || x + dx < radius) {
+        dx = -dx;
+    }
+    if (y + dy > canvas.height - radius || y + dy < radius) {
+        dy = -dy;
+    }
+
+    x += dx;
+    y += dy;
+
+    requestAnimationFrame(draw);
+}
+
+// Mouse click response
+canvas.addEventListener("click", function () {
+    // Change ball color & reverse direction
+    color = "#" + Math.floor(Math.random() * 16777215).toString(16);
+    dx = -dx;
+    dy = -dy;
+});
+
+draw();
+</script>
+
+
+<footer>
+    <nav>
+        <div class="nav-links-container">
+            <ul class="nav-links">
+                <!--
+                <li><a href="#about">About</a></li>
+                -->
+                
+                <li><a href="Index.html">Home</a></li>
+                <li><a href="Projects.html">Assignments</a></li>
+                <li><a href="Classes.html">Classes</a></li>
+            </ul>
+        </div>
+    </nav>
+    <p>Copyright &#169; 2025 Aidyn Carey. All Rights Reserved.</p>
+</footer>
+
+</body>
+</html>
