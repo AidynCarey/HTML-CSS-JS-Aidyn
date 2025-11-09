@@ -1,0 +1,22 @@
+:root{
+  --bg:#f6f8fa; --card:#ffffff; --accent:#0a74da; --muted:#666;
+  --gap:12px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; font-family:Inter, Roboto, system-ui, Arial; background:var(--bg);
+  color:#111;
+}
+.container{max-width:980px;margin:28px auto;padding:18px;}
+h1{margin:0 0 6px;font-size:1.6rem}
+.subtitle{margin:0 0 18px;color:var(--muted)}
+.panel{background:var(--card);padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(10,10,30,0.06);margin-bottom:16px}
+.course-list > div, .eligible-list > div{display:flex;align-items:center;gap:10px;padding:8px;border-bottom:1px solid #eee}
+.course-list > div:last-child, .eligible-list > div:last-child {border-bottom: none;}
+.course-code{font-weight:600;width:100px}
+.course-name{flex:1}
+.note{font-size:0.9rem;color:var(--muted)}
+button.info{border:1px solid #ddd;background:#fff;padding:6px;border-radius:6px;cursor:pointer}
+.details-note{white-space:pre-wrap;margin-top:8px;padding:8px;background:#fbfbfe;border:1px dashed #eee;border-radius:6px}
+.footer{margin-top:8px;color:var(--muted);font-size:0.85rem}
+.disabled{opacity:0.5}
