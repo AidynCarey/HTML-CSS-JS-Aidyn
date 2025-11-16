@@ -1,0 +1,68 @@
+{
+  "cms": [
+    {
+      "name": "WordPress",
+      "support": "Open Source; supported by most hosting companies",
+      "technology": "PHP, MySQL; large plugin/theme ecosystem",
+      "capabilities": "Themes, Plugins, Custom Post Types, REST API, Media Management",
+      "limitations": "Security vulnerabilities through plugins; requires frequent updates; performance requires optimization",
+      "example": "https://wordpress.org",
+      "sources": {
+        "official": "https://wordpress.org",
+        "info": "https://kinsta.com/knowledgebase/what-is-wordpress/"
+      }
+    },
+    {
+      "name": "Joomla",
+      "support": "Open Source; maintained by Open Source Matters",
+      "technology": "PHP, MySQL/MariaDB; MVC architecture",
+      "capabilities": "Built-in multilingual support, flexible user access controls, strong content organization",
+      "limitations": "Steeper learning curve than WordPress; fewer themes/plugins; smaller community",
+      "example": "https://www.harvard.edu",
+      "sources": {
+        "official": "https://www.joomla.org",
+        "info": "https://kinsta.com/learn/what-is-joomla/"
+      }
+    },
+    {
+      "name": "Drupal",
+      "support": "Open Source; supported by the Drupal Association",
+      "technology": "PHP, MySQL/MariaDB/PostgreSQL; highly modular",
+      "capabilities": "Enterprise-level security, highly customizable, robust taxonomy, powerful user permissions",
+      "limitations": "Complex for beginners; high development cost; fewer ready-made themes",
+      "example": "https://www.tesla.com",
+      "sources": {
+        "official": "https://www.drupal.org",
+        "info": "https://www.acquia.com/drupal"
+      }
+    },
+    {
+      "name": "Wix",
+      "support": "Commercial platform; supported by Wix.com",
+      "technology": "Cloud-based SaaS, proprietary editor, integrated hosting",
+      "capabilities": "Drag-and-drop builder, app marketplace, built-in SEO tools, hosting included",
+      "limitations": "Limited backend customization; vendor lock-in; cannot self-host; template switching issues",
+      "example": "https://www.carmelbakery.com",
+      "sources": {
+        "official": "https://www.wix.com",
+        "info": "https://www.websitebuilderexpert.com/building-websites/wix-review/"
+      }
+    },
+    {
+      "name": "Squarespace",
+      "support": "Commercial platform; supported by Squarespace, Inc.",
+      "technology": "Cloud-based SaaS, proprietary templates, integrated CDN/hosting",
+      "capabilities": "High-end templates, strong ecommerce tools, built-in analytics, drag-and-drop editor",
+      "limitations": "Limited extensions, no server-side access, less developer control compared to open-source CMS",
+      "example": "https://bittersoutherner.com",
+      "example_alt": [
+        "https://blog.lyft.com",
+        "https://www.theplayerstribune.com"
+      ],
+      "sources": {
+        "official": "https://www.squarespace.com",
+        "info": "https://www.pcmag.com/reviews/squarespace"
+      }
+    }
+  ]
+}
