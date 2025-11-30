@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Orb Collector — Prototype (Group 11)</title>
+  <style>
+    :root{--bg:#0b1220;--panel:#0f1724;--accent:#00d4ff;--muted:#9aa7b2}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    body{background:linear-gradient(180deg,#041322 0%, #071826 100%);color:white;display:flex;align-items:center;justify-content:center}
+    .wrap{width:900px;max-width:96%;background:rgba(255,255,255,0.03);border-radius:12px;padding:18px;box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+    header{display:flex;gap:18px;align-items:center}
+    h1{font-size:18px;margin:0}
+    .meta{margin-left:auto;text-align:right;font-size:13px;color:var(--muted)}
+    #gameCanvas{background:linear-gradient(180deg,#071826,#02101a);display:block;margin:12px auto;border-radius:8px}
+    .controls{display:flex;gap:10px;align-items:center;justify-content:space-between}
+    .hud{display:flex;gap:10px;align-items:center}
+    .pill{background:rgba(255,255,255,0.03);padding:6px 10px;border-radius:8px;font-size:14px}
+    .instructions{font-size:13px;color:var(--muted);margin-top:8px}
+    footer{font-size:13px;color:var(--muted);margin-top:10px}
+    button{background:var(--accent);border:0;padding:8px 12px;border-radius:8px;color:#072032;font-weight:600}
+    .big{font-size:20px;font-weight:700}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Orb Collector — Prototype</h1>
+        <div class="instructions">Design: move the collector and catch orbs that match the target color. Wrong catches cost lives. Score increases and levels speed up.</div>
+      </div>
+      <div class="meta">Group: <strong>Group 11</strong><br>Assignment 13 — Game Part 1</div>
+    </header>
+
+    <canvas id="gameCanvas" width="800" height="500"></canvas>
+
+    <div class="controls">
+      <div class="hud">
+        <div class="pill">Score: <span id="score">0</span></div>
+        <div class="pill">Level: <span id="level">1</span></div>
+        <div class="pill">Lives: <span id="lives">3</span></div>
+        <div class="pill">Target: <span id="target" class="big">●</span></div>
+      </div>
+      <div>
+        <button id="startBtn">Start / Restart</button>
+      </div>
+    </div>
+
+    <footer>
+      Controls: Arrow keys / A & D to move. On mobile: touch left/right side of canvas. Unique twist: target color cycles every 6 seconds and orbs sometimes "mix" (two-color orbs score bonus when matching either color).
+    </footer>
+  </div>
+
+  <script>
+  // Orb Collector — simple prototype
+  (function(){
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    let W = canvas.width, H = canvas.height;
+
+    // HUD elements
+    const scoreEl = document.getElementById('score');
+    const levelEl = document.getElementById('level');
+    const livesEl = document.getElementById('lives');
+    const targetEl = document.getElementById('target');
+    const startBtn = document.getElementById('startBtn');
+
+    // Game state
+    let score=0, level=1, lives=3, running=false;
+    let collector = {x:W/2-60, y:H-40, w:120, h:18, speed:7};
+    let keys = {};
+    let orbs = [];
+    const baseColors = ['#ff6b6b','#ffd93d','#6bff8a','#5da2ff','#c97bff'];
+    let targetColorIndex = 0;
+    let spawnInterval = 1200; // ms
+    let lastSpawn = 0;
+    let lastTargetChange = 0;
+    let targetChangeInterval = 6000;
+    let gameTime=0;
+
+    function reset(){
+      score=0;level=1;lives=3;orbs=[];collector.x=W/2-collector.w/2;collector.speed=7;spawnInterval=1200;targetColorIndex=0;running=false;updateHUD();
+    }
+
+    function start(){ reset(); running=true; lastSpawn=performance.now(); lastTargetChange=performance.now(); gameLoop(performance.now()); }
+
+    startBtn.addEventListener('click', ()=>{ start(); });
+
+    // Resize handler (keeps canvas fixed size but responsive wrapper OK)
+    window.addEventListener('resize', ()=>{ /* no-op for prototype */ });
+
+    // Input
+    window.addEventListener('keydown', e=>{ keys[e.key]=true; });
+    window.addEventListener('keyup', e=>{ keys[e.key]=false; });
+
+    // Touch controls
+    canvas.addEventListener('touchstart', e=>{ e.preventDefault(); handleTouch(e.touches[0]); });
+    canvas.addEventListener('touchmove', e=>{ e.preventDefault(); handleTouch(e.touches[0]); });
+    function handleTouch(t){ const rect=canvas.getBoundingClientRect(); const x = t.clientX-rect.left; if(x < W/2) keys['leftTouch']=true; else keys['rightTouch']=true; }
+    canvas.addEventListener('touchend', e=>{ keys['leftTouch']=false; keys['rightTouch']=false; });
+
+    function spawnOrb(){
+      const x = Math.random()*(W-30)+15;
+      // 20% chance to be a "mixed" orb (two colors)
+      const isMixed = Math.random()<0.2;
+      let colorA = baseColors[Math.floor(Math.random()*baseColors.length)];
+      let colorB = isMixed ? baseColors[Math.floor(Math.random()*baseColors.length)] : null;
+      // ensure mixed colors differ
+      if(isMixed && colorA===colorB){ colorB = baseColors[(baseColors.indexOf(colorA)+1) % baseColors.length]; }
+      orbs.push({x, y:-20, r:16, speed:1.2 + Math.random()*1.4 + level*0.2, colorA, colorB});
+    }
+
+    function update(delta){
+      if(!running) return;
+      gameTime += delta;
+      // move collector
+      if(keys['ArrowLeft'] || keys['a'] || keys['A'] || keys['leftTouch']) collector.x -= collector.speed;
+      if(keys['ArrowRight']|| keys['d'] || keys['D'] || keys['rightTouch']) collector.x += collector.speed;
+      collector.x = Math.max(0, Math.min(W-collector.w, collector.x));
+
+      // spawn
+      if(performance.now() - lastSpawn > spawnInterval){ spawnOrb(); lastSpawn = performance.now(); }
+
+      // target change
+      if(performance.now() - lastTargetChange > targetChangeInterval){ targetColorIndex = (targetColorIndex+1) % baseColors.length; lastTargetChange = performance.now(); }
+
+      // update orbs
+      for(let i=orbs.length-1;i>=0;i--){
+        let o = orbs[i]; o.y += o.speed * (1 + level*0.05);
+        // collision with collector
+        if(o.y + o.r >= collector.y && o.y - o.r <= collector.y + collector.h && o.x >= collector.x - o.r && o.x <= collector.x + collector.w + o.r){
+          // determine match
+          const target = baseColors[targetColorIndex];
+          let matched = (o.colorA===target) || (o.colorB===target);
+          if(matched){
+            // scoring: mixed orb gives bonus
+            let gained = o.colorB ? 20 : 10;
+            score += gained;
+            // small combo: if collected while target is about to change, give extra
+            if(performance.now() - lastTargetChange > targetChangeInterval - 800) score += 5;
+            // level up every 50 points
+            if(score >= level*50){ level++; collector.speed += 0.5; spawnInterval = Math.max(400, spawnInterval - 80); }
+          } else {
+            lives -= 1;
+            if(lives<=0){ running=false; }
+          }
+          orbs.splice(i,1);
+        } else if(o.y - o.r > H){ // missed
+          // if orb falls past bottom, only penalize if it was a matching orb
+          const target = baseColors[targetColorIndex];
+          if(o.colorA===target || o.colorB===target){ lives--; if(lives<=0) running=false; }
+          orbs.splice(i,1);
+        }
+      }
+      updateHUD();
+    }
+
+    function draw(){
+      // background
+      ctx.clearRect(0,0,W,H);
+      // ground
+      ctx.fillStyle = '#06121a';
+      ctx.fillRect(0,H-70,W,70);
+
+      // collector
+      ctx.fillStyle = '#9fbfdc22';
+      ctx.fillRect(collector.x, collector.y, collector.w, collector.h);
+      // collector outline
+      ctx.strokeStyle = '#8fb3c8'; ctx.lineWidth = 3;
+      roundRect(ctx, collector.x-6, collector.y-10, collector.w+12, collector.h+20, 10, true, false);
+
+      // orbs
+      for(let o of orbs){
+        if(o.colorB){
+          // mixed: draw left/right halves
+          ctx.beginPath(); ctx.arc(o.x-4, o.y, o.r, 0, Math.PI*2); ctx.fillStyle = o.colorA; ctx.fill();
+          ctx.beginPath(); ctx.arc(o.x+4, o.y, o.r, 0, Math.PI*2); ctx.fillStyle = o.colorB; ctx.fill();
+          // overlay to blend
+          ctx.globalAlpha = 0.9; ctx.beginPath(); ctx.arc(o.x, o.y, o.r, 0, Math.PI*2); ctx.fillStyle = '#ffffff11'; ctx.fill(); ctx.globalAlpha = 1;
+        } else {
+          ctx.beginPath(); ctx.arc(o.x, o.y, o.r, 0, Math.PI*2); ctx.fillStyle = o.colorA; ctx.fill();
+        }
+        // small shine
+        ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.beginPath(); ctx.ellipse(o.x-6, o.y-6, 6, 4, 0, 0, Math.PI*2); ctx.fill();
+      }
+
+      // HUD overlay
+      ctx.fillStyle = 'rgba(0,0,0,0.14)'; ctx.fillRect(8,8,220,54);
+      ctx.fillStyle = '#9fbfdc'; ctx.font = '600 16px system-ui'; ctx.fillText('Orb Collector — Prototype', 18, 30);
+      ctx.fillStyle = '#dfeff7'; ctx.font='14px system-ui'; ctx.fillText('Move: ← → or A/D — Catch matching color', 18, 48);
+
+      if(!running){
+        ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(0,0,W,H);
+        ctx.fillStyle = '#fff'; ctx.font='700 32px system-ui'; ctx.textAlign='center';
+        ctx.fillText('Click Start to Play', W/2, H/2 - 10);
+        ctx.font='16px system-ui'; ctx.fillText('Collect matching orbs. Wrong catches lose lives.', W/2, H/2+18);
+        ctx.textAlign='start';
+      }
+    }
+
+    function updateHUD(){ scoreEl.textContent = score; levelEl.textContent = level; livesEl.textContent = lives; targetEl.style.color = baseColors[targetColorIndex]; }
+
+    function gameLoop(t){
+      const now = t || performance.now();
+      const delta = 16; // fixed timestep for prototype
+      update(delta);
+      draw();
+      if(running) requestAnimationFrame(gameLoop);
+      else draw();
+    }
+
+    function roundRect(ctx, x, y, w, h, r, fill, stroke) {
+      if (typeof r === 'undefined') r = 5;
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y,   x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x,   y + h, r);
+      ctx.arcTo(x,   y + h, x,   y,   r);
+      ctx.arcTo(x,   y,   x + w, y,   r);
+      ctx.closePath();
+      if (fill) ctx.fill();
+      if (stroke) ctx.stroke();
+    }
+
+    // initial draw
+    reset(); draw();
+
+    // small keyboard pause/resume
+    window.addEventListener('keydown', e=>{ if(e.key==='p'){ running = !running; if(running) requestAnimationFrame(gameLoop); } });
+
+  })();
+  </script>
+</body>
+</html>
